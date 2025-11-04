@@ -1,0 +1,111 @@
+const ytdl = require('ytdl-core');
+const fs = require('fs');
+const path = require('path');
+
+// --- CONFIGURATION ---
+const DOWNLOAD_DIR = path.join(__dirname, 'downloaded_media');
+// Ensure the download directory exists
+if (!fs.existsSync(DOWNLOAD_DIR)) {
+    fs.mkdirSync(DOWNLOAD_DIR);
+}
+
+/**
+ * Downloads media from a given URL using a specified quality format.
+ * @param {string} url - The media URL (e.g., YouTube link).
+ * @param {string} mode - 'video', 'audio', or 'low_res'.
+ * @returns {Promise<string>} The path to the downloaded file.
+ */
+async function downloadMedia(url, mode = 'video') {
+    if (!ytdl.validateURL(url)) {
+        throw new Error('Invalid media URL provided.');
+    }
+
+    try {
+        const info = await ytdl.getInfo(url);
+        const title = info.videoDetails.title.replace(/[^\w\s-]/g, ''); // Sanitize title for filename
+        let formatOptions = {};
+        let filename;
+
+        // --- POWERFUL FORMAT SELECTION LOGIC ---
+        switch (mode) {
+            case 'audio':
+                // Highest quality audio stream only (usually m4a or webm)
+                formatOptions = { filter: 'audioonly', quality: 'highestaudio' };
+                filename = `${title}_audio.mp3`; 
+                // Note: ytdl-core doesn't natively convert to MP3; you'd need ffmpeg for that. 
+                // This downloads the raw best audio stream.
+                break;
+
+            case 'low_res':
+                // Smallest video format for quick transfer
+                formatOptions = { filter: 'videoandaudio', quality: 'lowestaudio' };
+                filename = `${title}_low.mp4`;
+                break;
+
+            case 'video':
+            default:
+                // Best combined audio/video stream available in a single file
+                // If separate best audio/video streams are available, ytdl-core typically picks the best combined.
+                formatOptions = { filter: 'videoandaudio', quality: 'highest' };
+                filename = `${title}_best.mp4`;
+                break;
+        }
+
+        const filePath = path.join(DOWNLOAD_DIR, filename);
+
+        console.log(`\n🚀 Starting download of: ${title}`);
+        console.log(`Mode: ${mode.toUpperCase()} to ${filePath}`);
+
+        // --- CORE DOWNLOAD COMMAND (PIPING THE STREAM) ---
+        ytdl(url, formatOptions)
+            .pipe(fs.createWriteStream(filePath));
+            
+        // Return a promise that resolves when the download is complete
+        return new Promise((resolve, reject) => {
+            const stream = ytdl(url, formatOptions);
+            
+            stream.pipe(fs.createWriteStream(filePath));
+
+            stream.on('end', () => {
+                console.log(`✅ Download complete: ${filePath}`);
+                resolve(filePath);
+            });
+
+            stream.on('error', (err) => {
+                console.error(`❌ Download failed for ${title}:`, err);
+                // Clean up incomplete file
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+                reject(err);
+            });
+        });
+
+    } catch (error) {
+        console.error('An error occurred in downloadMedia:', error.message);
+        throw error;
+    }
+}
+
+// --- USAGE EXAMPLE ---
+async function main() {
+    // Replace with a valid YouTube URL
+    const mediaUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; 
+
+    try {
+        // Example 1: Download highest quality video (Mode: 'video')
+        const videoPath = await downloadMedia(mediaUrl, 'video');
+        console.log(`Video saved successfully at: ${videoPath}`);
+
+        // Example 2: Download audio only (Mode: 'audio')
+        // const audioPath = await downloadMedia(mediaUrl, 'audio');
+        // console.log(`Audio saved successfully at: ${audioPath}`);
+
+    } catch (error) {
+        console.log(`Failed to run download: ${error.message}`);
+    }
+}
+
+// Execute the main function
+// main();
+// To test, uncomment the 'main()' call and run: node mediaDownloader.js
+// If you are using this in a bot, you would export and call the downloadMedia function.
+module.exports = { downloadMedia };
