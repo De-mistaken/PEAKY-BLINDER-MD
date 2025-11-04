@@ -1,7 +1,7 @@
 {
-  "name": "PEAKY-BLINDER-MD",
+  "name": "Mutethia md",
   "version": "1.0.0",
-  "description": "Made with ♥️ in Kenya by Sang Lee",
+  "description": "Made with ♥️ in Kenya by Teddy",
   "main": "index.js",
   "scripts": {
     "start": "pm2 start index.js --deep-monitoring --attach --name PEAKY-BLINDER-MD",
