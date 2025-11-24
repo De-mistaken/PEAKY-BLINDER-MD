@@ -3,13 +3,13 @@
   <p align="center"> 🇵 🇪 🇦 🇰 🇾 -🇧 🇱 🇮 🇳 🇩 🇪 🇷 -🇲 🇩  </p>
   
 
-# 🔥 PEAKY-BLINDER-MD 🔥
+# 🔥 BEAR XMD 🔥
 
 <a><img src='https://files.catbox.moe/dat1by.jpg'/></a>
 
 ## ⚡ A Powerful Multi-Device WhatsApp Bot Made in Kenya 🇰🇪 ⚡
 
-### *By Order of the Peaky Blinders* 🎩
+### *By Order Sir Mutethia * 🎩
 
 [![GitHub stars](https://img.shields.io/github/stars/Thomas-shelby001/PEAKY-BLINDER-MD?style=for-the-badge&logo=github&color=gold)](https://github.com/Thomas-shelby001/PEAKY-BLINDER-MD/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Thomas-shelby001/PEAKY-BLINDER-MD?style=for-the-badge&logo=github&color=blue)](https://github.com/Thomas-shelby001/PEAKY-BLINDER-MD/network)
